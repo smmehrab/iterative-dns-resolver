@@ -66,11 +66,13 @@ def dns_resolve(domain, qtype, qtime, output=True):
                                         dns_output(query_response, qtime)
                                     return query_response
                                 if(rdata.rdtype == dns.rdatatype.CNAME):
-                                    if(qtype == 'NS' or qtype == 'MX'):
+                                    if(qtype.lower() == 'NS'.lower() or qtype.lower() == 'MX'.lower()):
                                         # output
                                         if(output):
                                             dns_output(query_response, qtime)
                                         return query_response
+                                    # output
+                                    print(f"--- resolving CNAME {str(rdata[0].target)}")
                                     # resolve cname
                                     dns_resolve(str(rdata[0].target), qtype, qtime)
                                     return query_response
@@ -96,7 +98,7 @@ def dns_resolve(domain, qtype, qtime, output=True):
                                     else:
                                         query_response = dns_query(qname, qtype, root_server)
                                         if(query_response != None):
-                                            if(len(query_response.answer) > 0 and (qtype == 'NS' or qtype == 'MX')):
+                                            if(len(query_response.answer) > 0 and (qtype.lower() == 'NS'.lower() or qtype.lower() == 'MX'.lower())):
                                                 # output
                                                 if(output):
                                                     dns_output(query_response, qtime)
@@ -105,7 +107,7 @@ def dns_resolve(domain, qtype, qtime, output=True):
                                                 if(query_response.flags & dns.flags.AA ==  dns.flags.AA):
                                                     for rdata in query_response.answer:
                                                         if(rdata.rdtype == dns.rdatatype.CNAME):
-                                                            if(qtype == 'NS' or qtype == 'MX'):
+                                                            if(qtype.lower() == 'NS'.lower() or qtype.lower() == 'MX'.lower()):
                                                                 # output
                                                                 if(output):
                                                                     dns_output(query_response, qtime)
@@ -132,7 +134,7 @@ def dns_resolve(domain, qtype, qtime, output=True):
                         # trying authoritative servers
                         else:
                             # qtype NS/MX
-                            if(len(query_response.authority) > 0 and (qtype == 'NS' or qtype == 'MX')):
+                            if(len(query_response.authority) > 0 and (qtype.lower() == 'NS'.lower() or qtype.lower() == 'MX'.lower())):
                                 # output
                                 if(output):
                                     dns_output(query_response, qtime)
@@ -187,13 +189,13 @@ def dns_query(qname, qtype, root_server, output=True):
     if(output):
         print(f"--> Contacting root ({root_server}) for {qtype} of {qname}")
 
-    if (qtype == 'A'):
+    if (qtype.lower() == 'A'.lower()):
         request = dns.message.make_query(qname, dns.rdatatype.A)
-    elif (qtype == 'NS'):
+    elif (qtype.lower() == 'NS'.lower()):
         request = dns.message.make_query(qname, dns.rdatatype.NS)
-    elif (qtype == 'MX'):
+    elif (qtype.lower() == 'MX'.lower()):
         request = dns.message.make_query(qname, dns.rdatatype.MX)
-    elif (qtype == 'CNAME'):
+    elif (qtype.lower() == 'CNAME'.lower()):
         request = dns.message.make_query(qname, dns.rdatatype.CNAME)
     else:
         # output
